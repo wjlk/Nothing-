@@ -37,6 +37,7 @@ public class SenderService extends Service {
                     }
                     sendBroadcast(new Intent(ACTION_ACK));
                 }
+            });
             server.start();
         } catch (IOException | RuntimeException error) {
             stopSelf();
