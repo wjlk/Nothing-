@@ -3,7 +3,7 @@
     <string name="app_name">نداء العائلة — المرسِل</string>
     <string name="sender_title">هاتف الجد</string>
     <string name="local_ip_format">عنوان هذا الهاتف: %1$s</string>
-    <string name="receiver_ip_hint">عنوان IP لهاتفك (مثال: 192.168.1.100)</string>
+    <string name="receiver_ip_hint">عنوان IP لهاتف الاستقبال (مثال: 192.168.1.100)</string>
     <string name="save_ip">حفظ العنوان</string>
     <string name="call_button">إضغط للنداء</string>
     <string name="ready">جاهز</string>
