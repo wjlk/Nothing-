@@ -141,10 +141,14 @@ public class MainActivity extends Activity {
 
     private void startSenderService() {
         Intent intent = new Intent(this, SenderService.class);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(intent);
-        } else {
-            startService(intent);
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(intent);
+            } else {
+                startService(intent);
+            }
+        } catch (RuntimeException error) {
+            showStatus("تعذر تشغيل خدمة الخلفية. فعّل إشعارات التطبيق.", false);
         }
     }
 
