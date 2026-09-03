@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">نداء العائلة — المستقبِل</string>
+    <string name="receiver_title">هاتف الاستقبال</string>
+    <string name="local_ip_format">عنوان هذا الهاتف: %1$s</string>
+    <string name="server_help">اكتب عنوان IP لهاتف الجد لإرسال تأكيد الرد إليه:</string>
+    <string name="sender_ip_hint">عنوان IP لهاتف الجد (مثال: 192.168.1.101)</string>
+    <string name="save_ip">حفظ العنوان</string>
+    <string name="test_alarm">اختبار الإنذار</string>
+    <string name="server_starting">الخادم المحلي جاهز على المنفذ 8080</string>
+    <string name="server_running">يستمع للنداء على المنفذ 8080</string>
+    <string name="alert_title">نداء من الجد</string>
+    <string name="alert_body">الرجاء التأكيد أنك في الطريق</string>
+    <string name="confirm_button">أنا في الطريق — تأكيد الرد</string>
+</resources>
