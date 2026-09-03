@@ -68,7 +68,12 @@ public class SenderService extends Service {
                 WifiManager.WIFI_MODE_FULL,
                 "localalert:sender");
         wifiLock.setReferenceCounted(false);
-        wifiLock.acquire();
+        try {
+            wifiLock.acquire();
+        } catch (SecurityException ignored) {
+            // Some Android builds restrict Wi-Fi locks; the service can still receive ACKs.
+            wifiLock = null;
+        }
     }
 
     private void createNotificationChannel() {
