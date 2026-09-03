@@ -12,7 +12,7 @@ public class AlarmActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeatures(Window.FEATURE_NO_TITLE);
+        getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         getWindow().addFlags(
                 WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
                         | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
