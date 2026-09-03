@@ -21,26 +21,24 @@ public class SenderService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        createNotificationChannel();
-        startForeground(NOTIFICATION_ID, buildNotification("جاهز لاستقبال تأكيد الرد"));
-        acquireWifiLock();
-        server = new SimpleHttpServer(8081, (method, path) -> {
-            if ("GET".equalsIgnoreCase(method) || "POST".equalsIgnoreCase(method)) {
-                getSharedPreferences(MainActivity.PREFERENCES, MODE_PRIVATE)
-                        .edit()
-                        .putBoolean(MainActivity.KEY_ACK_RECEIVED, true)
-                        .apply();
-                NotificationManager manager =
-                        (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                if (manager != null) {
-                    manager.notify(NOTIFICATION_ID, buildNotification("تم الرد"));
-                }
-                sendBroadcast(new Intent(ACTION_ACK));
-            }
-        });
         try {
+            createNotificationChannel();
+            startForeground(NOTIFICATION_ID, buildNotification("جاهز لاستقبال تأكيد الرد"));
+            server = new SimpleHttpServer(8081, (method, path) -> {
+                if ("GET".equalsIgnoreCase(method) || "POST".equalsIgnoreCase(method)) {
+                    getSharedPreferences(MainActivity.PREFERENCES, MODE_PRIVATE)
+                            .edit()
+                            .putBoolean(MainActivity.KEY_ACK_RECEIVED, true)
+                            .apply();
+                    NotificationManager manager =
+                            (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                    if (manager != null) {
+                        manager.notify(NOTIFICATION_ID, buildNotification("تم الرد"));
+                    }
+                    sendBroadcast(new Intent(ACTION_ACK));
+                }
             server.start();
-        } catch (IOException error) {
+        } catch (IOException | RuntimeException error) {
             stopSelf();
         }
     }
@@ -100,8 +98,12 @@ public class SenderService extends Service {
         if (server != null) {
             server.stop();
         }
-        if (wifiLock != null && wifiLock.isHeld()) {
-            wifiLock.release();
+        try {
+            if (wifiLock != null && wifiLock.isHeld()) {
+                wifiLock.release();
+            }
+        } catch (RuntimeException ignored) {
+            // The Wi-Fi lock may already be released by the device.
         }
         super.onDestroy();
     }
