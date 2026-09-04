@@ -10,9 +10,15 @@ import android.os.IBinder;
 import android.net.wifi.WifiManager;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 public class SenderService extends Service {
     public static final String ACTION_ACK = "com.example.localalert.sender.ACTION_ACK";
+    public static final String ACTION_WIDGET_ALERT =
+            "com.example.localalert.sender.ACTION_WIDGET_ALERT";
     private static final String CHANNEL_ID = "sender_status";
     private static final int NOTIFICATION_ID = 1001;
     private SimpleHttpServer server;
@@ -91,7 +97,57 @@ public class SenderService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if (intent != null && ACTION_WIDGET_ALERT.equals(intent.getAction())) {
+            sendAlertFromWidget();
+        }
         return START_STICKY;
+    }
+
+    private void sendAlertFromWidget() {
+        String receiverIp = getSharedPreferences(MainActivity.PREFERENCES, MODE_PRIVATE)
+                .getString(MainActivity.KEY_RECEIVER_IP, "");
+        if (!NetworkUtils.isPrivateIpv4(receiverIp)) {
+            updateServiceNotification("افتح التطبيق واحفظ عنوان الاستقبال أولاً");
+            return;
+        }
+
+        updateServiceNotification("جارٍ إرسال النداء…");
+        network.execute(() -> {
+            HttpURLConnection connection = null;
+            try {
+                URL url = new URL("http://" + receiverIp + ":8080/alert");
+                connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("POST");
+                connection.setConnectTimeout(2500);
+                connection.setReadTimeout(3500);
+                connection.setDoOutput(true);
+                connection.setRequestProperty("Content-Type", "text/plain; charset=utf-8");
+                byte[] payload = "alert".getBytes(StandardCharsets.UTF_8);
+                connection.setFixedLengthStreamingMode(payload.length);
+                try (OutputStream output = connection.getOutputStream()) {
+                    output.write(payload);
+                }
+                int responseCode = connection.getResponseCode();
+                updateServiceNotification(
+                        responseCode >= 200 && responseCode < 300
+                                ? "تم إرسال النداء من الشاشة الرئيسية"
+                                : "تعذر إرسال النداء (" + responseCode + ")");
+            } catch (Exception error) {
+                updateServiceNotification("تعذر الاتصال بهاتف الاستقبال");
+            } finally {
+                if (connection != null) {
+                    connection.disconnect();
+                }
+            }
+        });
+    }
+
+    private void updateServiceNotification(String text) {
+        NotificationManager manager =
+                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        if (manager != null) {
+            manager.notify(NOTIFICATION_ID, buildNotification(text));
+        }
     }
 
     @Override
