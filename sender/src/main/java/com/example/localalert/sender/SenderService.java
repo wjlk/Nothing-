@@ -3,6 +3,7 @@ package com.example.localalert.sender;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Build;
@@ -57,12 +58,27 @@ public class SenderService extends Service {
         Notification.Builder builder = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
                 ? new Notification.Builder(this, CHANNEL_ID)
                 : new Notification.Builder(this);
+        Intent callIntent = new Intent(this, SenderService.class);
+        callIntent.setAction(ACTION_WIDGET_ALERT);
+        int pendingIntentFlags = PendingIntent.FLAG_UPDATE_CURRENT;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            pendingIntentFlags |= PendingIntent.FLAG_IMMUTABLE;
+        }
+        PendingIntent callAction = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+                ? PendingIntent.getForegroundService(
+                        this, 7002, callIntent, pendingIntentFlags)
+                : PendingIntent.getService(this, 7002, callIntent, pendingIntentFlags);
         return builder
                 .setSmallIcon(android.R.drawable.ic_dialog_info)
                 .setContentTitle(getString(com.example.localalert.sender.R.string.app_name))
                 .setContentText(text)
                 .setOngoing(true)
+                .setVisibility(Notification.VISIBILITY_PUBLIC)
                 .setCategory(Notification.CATEGORY_SERVICE)
+                .addAction(new Notification.Action.Builder(
+                        android.R.drawable.ic_menu_call,
+                        "إضغط للنداء",
+                        callAction).build())
                 .build();
     }
 
