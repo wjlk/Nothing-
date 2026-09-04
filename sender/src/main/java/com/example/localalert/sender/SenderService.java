@@ -14,6 +14,8 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class SenderService extends Service {
     public static final String ACTION_ACK = "com.example.localalert.sender.ACTION_ACK";
@@ -21,6 +23,7 @@ public class SenderService extends Service {
             "com.example.localalert.sender.ACTION_WIDGET_ALERT";
     private static final String CHANNEL_ID = "sender_status";
     private static final int NOTIFICATION_ID = 1001;
+    private final ExecutorService network = Executors.newSingleThreadExecutor();
     private SimpleHttpServer server;
     private WifiManager.WifiLock wifiLock;
 
@@ -162,6 +165,7 @@ public class SenderService extends Service {
         } catch (RuntimeException ignored) {
             // The Wi-Fi lock may already be released by the device.
         }
+        network.shutdownNow();
         super.onDestroy();
     }
 
