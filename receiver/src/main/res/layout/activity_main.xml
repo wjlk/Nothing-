@@ -7,6 +7,13 @@
     android:orientation="vertical"
     android:padding="28dp">
 
+    <ImageView
+        android:layout_width="96dp"
+        android:layout_height="92dp"
+        android:contentDescription="@string/button_image_description"
+        android:scaleType="centerInside"
+        android:src="@drawable/button_image" />
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
