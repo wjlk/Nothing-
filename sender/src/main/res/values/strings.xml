@@ -7,4 +7,7 @@
     <string name="save_ip">حفظ العنوان</string>
     <string name="call_button">إضغط للنداء</string>
     <string name="ready">جاهز</string>
+    <string name="button_image_description">زر النداء الأحمر</string>
+    <string name="widget_button">اضغط للنداء</string>
+    <string name="widget_description">زر نداء سريع</string>
 </resources>
